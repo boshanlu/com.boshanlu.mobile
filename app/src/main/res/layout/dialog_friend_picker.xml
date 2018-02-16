@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_secondary">
+
+    <ImageView
+        android:id="@+id/btn_close"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="12dp"
+        android:src="@drawable/ic_close_24dp"
+        android:tint="@color/orange_light" />
+
+    <ImageView
+        android:id="@+id/btn_ok"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:padding="12dp"
+        android:src="@drawable/ic_done_black_24dp"
+        android:tint="@color/green_light" />
+
+
+    <TextView
+        android:id="@+id/friend_sel"
+        style="@style/text_14_pri"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="选择@好友" />
+
+    <View
+        android:id="@+id/gap"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/friend_sel"
+        android:background="@color/colorDivider" />
+
+    <LinearLayout
+        android:id="@+id/info_view"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:layout_below="@id/gap"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:id="@+id/progress_view"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+
+        <TextView
+            android:id="@+id/info_text"
+            style="@style/text_12_sec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:text="好友列表加载中" />
+
+    </LinearLayout>
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/friend_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/gap"
+        android:visibility="gone" />
+</RelativeLayout>

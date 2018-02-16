@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.boshanlu.mobile.widget.emotioninput.SmileyInputRoot xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <include layout="@layout/my_toolbar" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/topic_list"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/bg_primary" />
+
+    <include layout="@layout/my_input_bar" />
+
+</com.boshanlu.mobile.widget.emotioninput.SmileyInputRoot>

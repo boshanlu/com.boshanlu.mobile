@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_item_btn_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/dimen_4"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:gravity="center_horizontal"
+    android:orientation="horizontal"
+    android:paddingBottom="8dp"
+    android:paddingLeft="@dimen/dimen_16"
+    android:paddingRight="@dimen/dimen_16"
+    android:paddingTop="@dimen/dimen_16">
+
+    <com.boshanlu.mobile.widget.CircleImageView
+        android:scaleType="centerCrop"
+        android:id="@+id/article_user_image"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/image_placeholder"
+        app:civ_border_color="@android:color/white"
+        app:civ_border_width="1dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dimen_8"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/title"
+                style="@style/text_14_sec"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textStyle="bold"
+                tools:text="python发送邮件" />
+
+            <TextView
+                android:id="@+id/time"
+                style="@style/text_12_sec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="2015-01-01" />
+
+            <TextView
+                android:id="@+id/is_read"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/dimen_8"
+                android:layout_marginStart="@dimen/dimen_8"
+                android:background="@drawable/badge"
+                android:paddingBottom="2dp"
+                android:paddingLeft="4dp"
+                android:paddingRight="4dp"
+                android:paddingTop="2dp"
+                android:text="未读"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <com.boshanlu.mobile.widget.ArrowTextView
+            android:id="@+id/reply_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="4"
+            android:padding="6dp"
+            android:textColor="@color/text_color_sec"
+            android:textSize="14sp"
+            tools:text="1111\n测试呵呵哈哈哈。。。" />
+    </LinearLayout>
+
+</LinearLayout>
+
+

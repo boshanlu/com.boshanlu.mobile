@@ -1,0 +1,62 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="论坛设置">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="setting_hide_zhidin"
+            android:summary="隐藏帖子列表的置顶帖"
+            android:title="隐藏置顶帖" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting_show_plain"
+            android:summaryOff="帖子内容保留css信息"
+            android:summaryOn="帖子内容去除一切css"
+            android:title="简单帖子样式模式" />
+
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting_show_notify"
+            android:summaryOff="不进行新消息提醒"
+            android:summaryOn="有新消息通知栏提醒"
+            android:title="新消息通知栏提醒" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="group_tail"
+        android:title="小尾巴设置">
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="setting_show_tail"
+            android:summary="不建议添加过长过大的小尾巴"
+            android:title="启用小尾巴" />
+
+        <EditTextPreference
+            android:capitalize="words"
+            android:defaultValue="[align=right][size=1][color=Gray]-----来自[url=https://boshanlu.com/forum.php?mod=viewthread&amp;tid=4289]博山庐手机客户端[/url][/color][/size][/align]"
+            android:inputType="textCapWords"
+            android:key="setting_user_tail"
+            android:maxLines="3"
+            android:selectAllOnFocus="true"
+            android:summary="自定义你的小尾巴"
+            android:title="自定义小尾巴" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="group_other"
+        android:title="其他信息">
+        <Preference
+            android:key="about_this"
+            android:summary="当前版本1.0 beta 1"
+            android:title="检查更新" />
+        <Preference
+            android:key="open_sourse"
+            android:summary="在github上查看本项目原作者项目"
+            android:title="项目地址" />
+
+        <Preference
+            android:key="clean_cache"
+            android:summary="当前缓存大小1MB"
+            android:title="清除缓存" />
+    </PreferenceCategory>
+
+</PreferenceScreen>

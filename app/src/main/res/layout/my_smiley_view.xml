@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/smileys_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <android.support.design.widget.TabLayout
+        android:id="@+id/mytab"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:background="@drawable/divider_bottom"
+        android:elevation="2dp"
+        app:tabSelectedTextColor="@color/colorAccent"
+        app:tabTextColor="@color/text_color_sec" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scrollbarSize="2dp"
+        android:scrollbars="vertical" />
+</LinearLayout>

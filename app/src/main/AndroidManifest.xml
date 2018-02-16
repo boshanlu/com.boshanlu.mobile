@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.boshanlu.mobile">
+
+    <!-- 联网权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 检测网络状态变化权限 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 操作sd卡权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <application
+        android:name="com.boshanlu.mobile.App"
+        android:allowBackup="true"
+        android:appCategory="social"
+        android:icon="@mipmap/logo"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/logo_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="com.boshanlu.mobile.activity.LaunchActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.boshanlu.mobile.activity.HomeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="adjustPan|stateHidden" />
+        <activity
+            android:name="com.boshanlu.mobile.activity.PostsActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.boshanlu.mobile.activity.AboutActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="com.boshanlu.mobile.activity.PostActivity"
+            android:exported="true"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.boshanlu.mobile.activity.UserDetailActivity"
+            android:label="用户信息"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.boshanlu.mobile.activity.LoginActivity"
+            android:label="登陆博山庐"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.boshanlu.mobile.activity.SignActivity"
+            android:label="签到中心"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.boshanlu.mobile.activity.ChatActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name="com.boshanlu.mobile.activity.NewPostActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name="com.boshanlu.mobile.activity.SearchActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.boshanlu.mobile.downloadfile.DownLoadActivity"
+            android:label="下载文件"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dialog" />
+        <activity
+            android:name="com.boshanlu.mobile.activity.EditActivity"
+            android:screenOrientation="portrait" />
+
+        <service android:name="com.boshanlu.mobile.downloadfile.DownloadService" />
+
+        <activity android:name="com.boshanlu.mobile.activity.FragementActivity" />
+        <activity android:name="com.boshanlu.mobile.activity.FriendActivity" />
+        <activity android:name="com.boshanlu.mobile.activity.ViewImgActivity" />
+        <activity android:name="com.boshanlu.mobile.activity.SettingActivity" />
+        <activity android:name="com.boshanlu.mobile.activity.ReplyCzActivity" />
+        <activity android:name="com.boshanlu.mobile.activity.ThemeActivity" />
+        <activity android:name="com.boshanlu.mobile.activity.ChangePasswordActivity"/>
+    </application>
+
+</manifest>
