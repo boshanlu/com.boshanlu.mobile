@@ -197,7 +197,7 @@ public class RuisUtils {
 
                     for (int j = 0; j < forumData.length(); j++) {
                         JSONObject o = forumData.getJSONObject(j);
-                        forums.put(o.getString("fid"), new Forum(o.getString("name"), o.getInt("fid"), true));
+                        forums.put(o.getString("fid"), new Forum(o.getString("name").replace("（","\n（"), o.getInt("fid"), true));
                     }
 
                     for (int i = 0; i < cateData.length(); i++) {

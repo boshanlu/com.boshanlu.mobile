@@ -187,7 +187,7 @@ public class LoginActivity extends BaseActivity implements InputValidDialog.OnIn
                 }
 
                 loginUrl = doc.select("form#loginform").attr("action");
-                String hash = doc.select("input#formhash").attr("value");
+                String hash = doc.select("input[name=formhash]").attr("value");
                 App.setHash(LoginActivity.this, hash);
             }
 

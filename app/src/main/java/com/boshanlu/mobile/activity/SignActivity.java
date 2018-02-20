@@ -85,6 +85,8 @@ public class SignActivity extends BaseActivity {
                 String res = new String(response);
                 //// TODO: 16-8-26
                 Document doc = Jsoup.parse(res);
+                String hash = doc.select("input[name=formhash]").attr("value");
+                App.setHash(SignActivity.this, hash);
                 if (res.contains("今日您已签到")) {
                     int i = 0;
                     String[] infoList = new String[7];
@@ -141,7 +143,7 @@ public class SignActivity extends BaseActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                spinnerSelect = pos;
+                spinnerSelect = pos + 1;
             }
 
             @Override
