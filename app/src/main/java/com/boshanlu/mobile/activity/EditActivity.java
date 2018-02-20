@@ -176,7 +176,7 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private void startPost() {
-        String url = "forum.php?mod=post&action=edit&extra=&editsubmit=yes&mobile=2&handlekey=postform&inajax=1";
+        String url = "forum.php?mod=post&action=edit&extra=&editsubmit=yes&mobile=2&geoloc=&handlekey=postform&inajax=1";
         params.put("editsubmit", "yes");
         if (typeId > 0) {
             params.put("typeid", String.valueOf(typeId));
@@ -184,6 +184,7 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
 
         params.put("subject", edTitle.getText().toString());
         params.put("message", edContent.getText().toString());
+        params.remove("delete");
 
         HttpUtil.post(url, params, new ResponseHandler() {
             @Override

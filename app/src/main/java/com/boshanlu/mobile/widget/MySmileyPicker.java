@@ -28,7 +28,7 @@ import java.util.List;
  */
 
 public class MySmileyPicker extends PopupWindow {
-
+    private static final int SMILEY_DF = 0;
     private static final int SMILEY_TB = 1;
     private static final int SMILEY_JGZ = 2;
     private static final int SMILEY_ACN = 3;
@@ -36,7 +36,7 @@ public class MySmileyPicker extends PopupWindow {
     private OnItemClickListener listener;
     private SmileyAdapter adapter;
     private List<Pair<String, String>> smileys = new ArrayList<>();
-    private int smiley_type = SMILEY_TB;
+    private int smiley_type = SMILEY_DF;
 
 
     public MySmileyPicker(Context context) {
@@ -52,6 +52,7 @@ public class MySmileyPicker extends PopupWindow {
         RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
 
         getSmileys();
+        tab.addTab(tab.newTab().setText("默认"));
         tab.addTab(tab.newTab().setText("贴吧"));
         tab.addTab(tab.newTab().setText("金馆长"));
         tab.addTab(tab.newTab().setText("AC娘"));
@@ -93,12 +94,15 @@ public class MySmileyPicker extends PopupWindow {
     private void changeSmiley(int position) {
         switch (position) {
             case 0:
-                smiley_type = SMILEY_TB;
+                smiley_type = SMILEY_DF;
                 break;
             case 1:
-                smiley_type = SMILEY_JGZ;
+                smiley_type = SMILEY_TB;
                 break;
             case 2:
+                smiley_type = SMILEY_JGZ;
+                break;
+            case 3:
                 smiley_type = SMILEY_ACN;
                 break;
         }
@@ -114,7 +118,7 @@ public class MySmileyPicker extends PopupWindow {
     private void getSmileys() {
         smileys.clear();
         String smiley_dir = "file:///android_asset/smiley/";
-        int stringId = R.array.smiley_tieba;
+        int stringId = R.array.smiley_default;
         if (smiley_type == SMILEY_TB) {
             stringId = R.array.smiley_tieba;
         } else if (smiley_type == SMILEY_JGZ) {
@@ -126,7 +130,6 @@ public class MySmileyPicker extends PopupWindow {
         for (String aSmileyArray : smileyArray) {
             String path = smiley_dir + aSmileyArray.split(",")[0];
             String name = aSmileyArray.split(",")[1];
-            Log.e("TAG", "" + name);
             smileys.add(new Pair<>(path, name));
         }
     }

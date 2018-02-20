@@ -8,10 +8,13 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.boshanlu.mobile.R;
 import com.boshanlu.mobile.model.Category;
 import com.boshanlu.mobile.model.Forum;
+import com.boshanlu.mobile.myhttp.HttpUtil;
+import com.boshanlu.mobile.myhttp.ResponseHandler;
 import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
@@ -112,7 +115,7 @@ public class RuisUtils {
 
     //获得到下一等级的积分
     public static int getNextLevel(int a) {
-        if ( a < 0) {
+        if (a < 0) {
             return 0;
         } else if (a < 600) {
             return 600;
@@ -145,7 +148,7 @@ public class RuisUtils {
         } else if (a < 500000) {
             return (a - 19000) / 481000f;
         } else if (a < 999999999) {
-            return (a - 500000) / (999999999-500000);
+            return (a - 500000) / (999999999 - 500000);
         } else if (a < 3500) {
             return (a - 3000) / 500f;
         } else if (a < 6000) {
@@ -180,47 +183,44 @@ public class RuisUtils {
     }
 
     public static List<Category> getForums(Context context, boolean isLogin) {
-        InputStream in = null;
-        String s;
-        try {
-            in = context.getAssets().open("forums.json");
-            int size = in.available();
-            byte[] buffer = new byte[size];
-            in.read(buffer);
-            s = new String(buffer);
-            in.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-
+        String url = "api/mobile/index.php?module=forumindex&version=4";
         List<Category> cates = new ArrayList<>();
-        JSONArray jsonArray = null;
-        try {
-            jsonArray = new JSONArray(s);
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject o = jsonArray.getJSONObject(i);
-                boolean cateLogin = o.getBoolean("login");
-                if (!isLogin && cateLogin) {//false true
-                    continue;
-                }
+        HttpUtil.SyncGet(context, url, new ResponseHandler() {
+            @Override
+            public void onSuccess(byte[] response) {
+                String res = new String(response);
+                try {
+                    JSONObject resData = new JSONObject(res).getJSONObject("Variables");
+                    JSONArray cateData = resData.getJSONArray("catlist");
+                    JSONArray forumData = resData.getJSONArray("forumlist");
+                    Map<String, Forum> forums = new HashMap<>();
 
-                boolean cateCanPost = o.getBoolean("canPost");
-                List<Forum> fs = new ArrayList<>();
-                JSONArray forums = o.getJSONArray("forums");
-                for (int j = 0; j < forums.length(); j++) {
-                    JSONObject oo = forums.getJSONObject(j);
-                    boolean forumLogin = oo.getBoolean("login");
-                    if (!isLogin && forumLogin) {//false true
-                        continue;
+                    for (int j = 0; j < forumData.length(); j++) {
+                        JSONObject o = forumData.getJSONObject(j);
+                        forums.put(o.getString("fid"), new Forum(o.getString("name"), o.getInt("fid"), true));
                     }
-                    fs.add(new Forum(oo.getString("name"), oo.getInt("fid"), forumLogin));
+
+                    for (int i = 0; i < cateData.length(); i++) {
+                        JSONObject o = cateData.getJSONObject(i);
+                        JSONArray forumList = o.getJSONArray("forums");
+                        List<Forum> fs = new ArrayList<>();
+                        for (int j = 0; j < forumList.length(); j++) {
+                            fs.add(forums.get(forumList.getString(j)));
+                        }
+                        cates.add(new Category(o.getString("name"), o.getInt("fid"), true, true, fs));
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
-                cates.add(new Category(o.getString("name"), o.getInt("gid"), cateLogin, cateCanPost, fs));
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+
+            @Override
+            public void onFailure(Throwable e) {
+                super.onFailure(e);
+                Toast.makeText(context, "网络错误，无法获取版块列表数据", Toast.LENGTH_SHORT).show();
+            }
+        });
         return cates;
     }
 

@@ -107,16 +107,18 @@ public class SmileyView extends LinearLayout
 
             adapter = new PageAdapter();
             List<SmileyDataSet> smileys = new ArrayList<>();
+            SmileyDataSet setDf = SmileyDataSet.getDataSet(context, "默认", SmileyDataSet.TYPE_IMAGE, R.array.smiley_default);
             SmileyDataSet setTieba = SmileyDataSet.getDataSet(context, "贴吧", SmileyDataSet.TYPE_IMAGE, R.array.smiley_tieba);
             SmileyDataSet setAcn = SmileyDataSet.getDataSet(context, "ac娘", SmileyDataSet.TYPE_IMAGE, R.array.smiley_acn);
             SmileyDataSet setJgz = SmileyDataSet.getDataSet(context, "金馆长", SmileyDataSet.TYPE_IMAGE, R.array.smiley_jgz);
             SmileyDataSet setYwz = SmileyDataSet.getDataSet(context, "颜文字", SmileyDataSet.TYPE_TEXT, R.array.smiley_ywz);
 
+            smileys.add(setDf);
             smileys.add(setTieba);
             smileys.add(setAcn);
             smileys.add(setJgz);
             // TODO: 2016/12/11 睿思不支持emoji
-            //smileys.add(SmileyEmoji.getEmojis());
+            smileys.add(SmileyEmoji.getEmojis());
             smileys.add(setYwz);
             setSmileys(smileys);
             viewPager.setAdapter(adapter);
