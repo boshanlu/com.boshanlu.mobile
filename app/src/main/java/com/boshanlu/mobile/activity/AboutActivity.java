@@ -41,8 +41,11 @@ public class AboutActivity extends BaseActivity {
         String ss = "<b>博山庐手机客户端</b><br />    本项目基于西电睿思手机Discuz客户端开源项目在Apache License V2.0下二次开发，原项目链接："+
                 "<a href=\"https://github.com/freedom10086/Ruisi\">GitHub</a>  ，<br />"+
                 "功能不断更新完善中，bug较多还请多多反馈<br />bug反馈:<br />" +
-                "    1.到 <a href=\"forum.php?mod=viewthread&tid=" + App.POST_TID + "&mobile=2\">本帖</a> 回复<br />" +
-                "    2.发帖 <a href=\"home.php?mod=space&uid=1&do=profile&mobile=2\">@admin</a><br />";
+                "<ul>\n" +
+                "  <li>到 <a href=\"forum.php?mod=viewthread&tid=" + App.POST_TID + "&mobile=2\">本帖</a> 回复</li>\n" +
+                "  <li>发帖 <a href=\"home.php?mod=space&uid=1&do=profile&mobile=2\">@admin</a></li>\n" +
+                "</ul>\n<br />" +
+                "<p>本项目开源地址：<a href=\"https://github.com/boshanlu/com.boshanlu.mobile\">com.boshanlu.mobile</a>   </p>";
 
         TextView htmlView = findViewById(R.id.html_text);
         HtmlView.parseHtml(ss).into(htmlView);

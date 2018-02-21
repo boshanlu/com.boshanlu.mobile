@@ -73,7 +73,7 @@ public class SignActivity extends BaseActivity {
         progressBar.setVisibility(View.VISIBLE);
         Calendar c = Calendar.getInstance();
         int HOUR_OF_DAY = c.get(Calendar.HOUR_OF_DAY);
-        if (!(7 <= HOUR_OF_DAY && HOUR_OF_DAY < 23)) {
+        if (!(6 <= HOUR_OF_DAY && HOUR_OF_DAY < 23)) {
             sign_error();
             return;
         }
