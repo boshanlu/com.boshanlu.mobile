@@ -179,7 +179,7 @@ public class FrageForums extends BaseLazyFragment implements View.OnClickListene
     private class GetForumList extends AsyncTask<Boolean, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Boolean... params) {
-            forumDatas = RuisUtils.getForums(getActivity(), params[0]);
+            forumDatas = RuisUtils.getForums(getActivity(), params[0], false);
             return true;
         }
 

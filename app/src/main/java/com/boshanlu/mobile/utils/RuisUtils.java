@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 public class RuisUtils {
+    private static List<Category> cateList = new ArrayList<>();
 
     /**
      * 获得板块图标
@@ -182,9 +183,16 @@ public class RuisUtils {
         return params;
     }
 
-    public static List<Category> getForums(Context context, boolean isLogin) {
+    public static List<Category> getForums(Context context, boolean isLogin, boolean isCache) {
         String url = "api/mobile/index.php?module=forumindex&version=4";
         List<Category> cates = new ArrayList<>();
+        if (!isLogin) {
+            Toast.makeText(context, "登录后才能看到论坛内容哟~", Toast.LENGTH_SHORT).show();
+            return cates;
+        }
+        if (isCache && cateList.size() > 0) {
+            return cateList;
+        }
         HttpUtil.SyncGet(context, url, new ResponseHandler() {
             @Override
             public void onSuccess(byte[] response) {
@@ -197,7 +205,7 @@ public class RuisUtils {
 
                     for (int j = 0; j < forumData.length(); j++) {
                         JSONObject o = forumData.getJSONObject(j);
-                        forums.put(o.getString("fid"), new Forum(o.getString("name").replace("（","\n（"), o.getInt("fid"), true));
+                        forums.put(o.getString("fid"), new Forum(o.getString("name").replace("（", "\n（"), o.getInt("fid"), true));
                     }
 
                     for (int i = 0; i < cateData.length(); i++) {
@@ -209,7 +217,7 @@ public class RuisUtils {
                         }
                         cates.add(new Category(o.getString("name"), o.getInt("fid"), true, true, fs));
                     }
-
+                    cateList = cates;
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -219,6 +227,7 @@ public class RuisUtils {
             public void onFailure(Throwable e) {
                 super.onFailure(e);
                 Toast.makeText(context, "网络错误，无法获取版块列表数据", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
         });
         return cates;

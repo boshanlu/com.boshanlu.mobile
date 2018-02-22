@@ -133,7 +133,7 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
         edTitle = findViewById(R.id.ed_title);
         edContent = findViewById(R.id.ed_content);
 
-        List<Category> categories = RuisUtils.getForums(this, true);
+        List<Category> categories = RuisUtils.getForums(this, true, true);
         if (categories == null) {
             showLongToast("读取板块列表出错,请确保assets目录有forums.json文件");
             finish();
