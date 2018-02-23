@@ -5,10 +5,10 @@ android {
     buildToolsVersion '27.0.3'
     defaultConfig {
         applicationId "com.boshanlu.mobile"
-        minSdkVersion 21
+        minSdkVersion 15
         targetSdkVersion 27
-        versionCode 8
-        versionName '0.9.8'
+        versionCode 9
+        versionName '0.9.9'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

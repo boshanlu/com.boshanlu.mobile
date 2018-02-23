@@ -256,6 +256,9 @@ public class LoginActivity extends BaseActivity implements InputValidDialog.OnIn
                         showInputValidDialog();
                     } else if (reason.contains("登录失败") && reason.contains("您还可以尝试")) {
                         reason = reason.replace("登录失败", "账号或者密码错误");
+                    } else if (reason.contains("请输入验证码后继续登录")) {
+                        loadData();
+                        reason = "请再次点击登录以输入验证码";
                     }
                     networkErr(reason);
                 } else {

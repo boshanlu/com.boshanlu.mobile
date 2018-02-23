@@ -45,7 +45,7 @@
             android:layout_below="@+id/user_name"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="6dp"
-            android:text="西电大一"
+            android:text="注册用户"
             android:textColor="@color/white"
             android:textSize="13sp" />
     </RelativeLayout>

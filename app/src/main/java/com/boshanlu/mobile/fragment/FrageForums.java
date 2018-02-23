@@ -179,14 +179,18 @@ public class FrageForums extends BaseLazyFragment implements View.OnClickListene
     private class GetForumList extends AsyncTask<Boolean, Void, Boolean> {
         @Override
         protected Boolean doInBackground(Boolean... params) {
-            forumDatas = RuisUtils.getForums(getActivity(), params[0], false);
+            if (params[0]) {
+                forumDatas = RuisUtils.getForums(getActivity(), params[0], false);
+            } else {
+                forumDatas = null;
+            }
             return true;
         }
 
         @Override
         protected void onPostExecute(Boolean b) {
             if (forumDatas == null || forumDatas.size() == 0) {
-                Toast.makeText(getActivity(), "获取板块列表失败", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), "获取版块列表数据失败，登录后才能看到论坛内容哦~", Toast.LENGTH_LONG).show();
             }
 
             adapter.notifyDataSetChanged();
