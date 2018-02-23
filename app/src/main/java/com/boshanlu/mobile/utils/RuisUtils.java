@@ -36,6 +36,7 @@ import java.util.Map;
 
 public class RuisUtils {
     private static List<Category> cateList = new ArrayList<>();
+    public static Map<String, Forum> forums = new HashMap<>();
 
     /**
      * 获得板块图标
@@ -200,11 +201,18 @@ public class RuisUtils {
                     JSONObject resData = new JSONObject(res).getJSONObject("Variables");
                     JSONArray cateData = resData.getJSONArray("catlist");
                     JSONArray forumData = resData.getJSONArray("forumlist");
-                    Map<String, Forum> forums = new HashMap<>();
 
                     for (int j = 0; j < forumData.length(); j++) {
                         JSONObject o = forumData.getJSONObject(j);
-                        forums.put(o.getString("fid"), new Forum(o.getString("name").replace("（", "\n（"), o.getInt("fid"), true));
+                        List<Forum> subForum = new ArrayList<>();
+                        if (o.has("sublist")) {
+                            JSONArray subList = o.getJSONArray("sublist");
+                            for (int k = 0; k < subList.length(); k++) {
+                                JSONObject oo = subList.getJSONObject(k);
+                                subForum.add(new Forum(oo.getString("name"), oo.getInt("fid"), true, new ArrayList()));
+                            }
+                        }
+                        forums.put(o.getString("fid"), new Forum(o.getString("name").replace("（", "\n（"), o.getInt("fid"), true, subForum));
                     }
 
                     for (int i = 0; i < cateData.length(); i++) {

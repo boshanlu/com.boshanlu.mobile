@@ -50,8 +50,8 @@ import java.util.TimerTask;
 public class HomeActivity extends BaseActivity
         implements MyBottomTab.OnTabChangeListener, ViewPager.OnPageChangeListener {
 
-    //间隔20天检查更新一次
-    private static final int UPDATE_TIME = 1000 * 3600 * 24 * 20;
+    //间隔5天检查更新一次
+    private static final int UPDATE_TIME = 1000 * 3600 * 24 * 5;
     private static int interval = 180_000;//180s
     boolean ishaveReply = false;
     boolean ishavePm = false;

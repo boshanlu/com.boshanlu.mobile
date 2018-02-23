@@ -1,6 +1,8 @@
 package com.boshanlu.mobile.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,8 +15,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
+import android.widget.TextView;
 
 import com.boshanlu.mobile.R;
 import com.boshanlu.mobile.adapter.BaseAdapter;
@@ -23,10 +27,12 @@ import com.boshanlu.mobile.database.MyDB;
 import com.boshanlu.mobile.listener.HidingScrollListener;
 import com.boshanlu.mobile.listener.LoadMoreListener;
 import com.boshanlu.mobile.model.ArticleListData;
+import com.boshanlu.mobile.model.Forum;
 import com.boshanlu.mobile.myhttp.HttpUtil;
 import com.boshanlu.mobile.myhttp.ResponseHandler;
 import com.boshanlu.mobile.utils.DimmenUtils;
 import com.boshanlu.mobile.utils.GetId;
+import com.boshanlu.mobile.utils.RuisUtils;
 import com.boshanlu.mobile.utils.UrlUtils;
 import com.boshanlu.mobile.widget.MyListDivider;
 
@@ -71,6 +77,7 @@ public class PostsActivity extends BaseActivity implements
     private PostListAdapter adapter;
     private MyDB myDB = null;
     private int currentTabindex = 0;
+    private List<Forum> subForum = new ArrayList<>();
 
 
     public static void open(Context context, int fid, String title) {
@@ -89,8 +96,43 @@ public class PostsActivity extends BaseActivity implements
             FID = getIntent().getExtras().getInt("FID");
             TITLE = getIntent().getExtras().getString("TITLE");
         }
-        initToolBar(true, TITLE);
+        String toolBarTitle = TITLE;
+        boolean hasSubForum = false;
+        if (RuisUtils.forums.containsKey(String.valueOf(FID))) {
+            subForum = RuisUtils.forums.get(String.valueOf(FID)).subForum;
+            hasSubForum = subForum.size() > 0;
+            if (hasSubForum) {
+                toolBarTitle = toolBarTitle + " ▼";
+            }
+        }
+        initToolBar(true, toolBarTitle);
         myToolbar = findViewById(R.id.myToolBar);
+        if (hasSubForum) {
+            TextView myToolbarTitle = myToolbar.findViewById(R.id.title);
+            myToolbarTitle.setClickable(true);
+            List<String> strArray = new ArrayList<>();
+            for (Forum forum : subForum) {
+                strArray.add(forum.name);
+            }
+            String[] forumList = new String[strArray.size()];
+            strArray.toArray(forumList);
+            myToolbarTitle.setOnClickListener(view -> {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("子版列表");//设置标题
+                //设置列表
+                builder.setItems(forumList, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Log.d("===item click===", forumList[which]);
+                        Forum selectForum = subForum.get(which);
+                        Log.d("===selectForum===", selectForum.name);
+                        PostsActivity.open(view.getContext(), selectForum.fid, selectForum.name);
+                    }
+                });
+                builder.create().show();//创建并显示对话框
+            });
+        }
         btnRefresh = findViewById(R.id.btn);
         mRecyclerView = findViewById(R.id.recycler_view);
         tab = findViewById(R.id.tab);
