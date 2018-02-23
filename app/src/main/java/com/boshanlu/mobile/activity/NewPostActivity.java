@@ -135,7 +135,7 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
 
         List<Category> categories = RuisUtils.getForums(this, true, true);
         if (categories == null) {
-            showLongToast("读取板块列表出错,请确保assets目录有forums.json文件");
+            showLongToast("登录后才能看到论坛内容哟~");
             finish();
             return;
         }

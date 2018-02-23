@@ -187,8 +187,7 @@ public class RuisUtils {
         String url = "api/mobile/index.php?module=forumindex&version=4";
         List<Category> cates = new ArrayList<>();
         if (!isLogin) {
-            Toast.makeText(context, "登录后才能看到论坛内容哟~", Toast.LENGTH_SHORT).show();
-            return cates;
+            return null;
         }
         if (isCache && cateList.size() > 0) {
             return cateList;
