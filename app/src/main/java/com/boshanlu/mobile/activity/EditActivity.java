@@ -270,7 +270,9 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         int start = edContent.getSelectionStart();
         int end = edContent.getSelectionEnd();
         int p = s.indexOf("[/");//相对于要插入的文本光标所在位置
+
         Editable edit = edContent.getEditableText();//获取EditText的文字
+
         if (start < 0 || start >= edit.length()) {
             edit.append(s);
         } else if (start != end && start > 0 && start < end && p > 0) {

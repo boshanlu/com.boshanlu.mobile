@@ -351,16 +351,24 @@ public class NewPostActivity extends BaseActivity implements View.OnClickListene
 
     private void handleInsert(String s) {
         int start = edContent.getSelectionStart();
+        int end = edContent.getSelectionEnd();
+        int p = s.indexOf("[/");//相对于要插入的文本光标所在位置
+
         Editable edit = edContent.getEditableText();//获取EditText的文字
+
         if (start < 0 || start >= edit.length()) {
             edit.append(s);
+        } else if (start != end && start > 0 && start < end && p > 0) {
+            edit.insert(start, s.substring(0, p));//插入bbcode标签开始部分
+            end = end + p;
+            edit.insert(end, s.substring(p));//插入bbcode标签结束部分
+            p = end - start;
         } else {
             edit.insert(start, s);//光标所在位置插入文字
         }
-        //[size=7][/size]
-        int a = s.indexOf("[/");
-        if (a > 0) {
-            edContent.setSelection(start + a);
+
+        if (p > 0) {
+            edContent.setSelection(start + p);
         }
     }
 
