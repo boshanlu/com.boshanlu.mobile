@@ -30,7 +30,6 @@ import android.widget.Toast;
 import com.boshanlu.mobile.App;
 import com.boshanlu.mobile.R;
 import com.boshanlu.mobile.model.Forum;
-import com.boshanlu.mobile.model.SingleArticleData;
 import com.boshanlu.mobile.myhttp.HttpUtil;
 import com.boshanlu.mobile.myhttp.ResponseHandler;
 import com.boshanlu.mobile.myhttp.UploadImageResponseHandler;
@@ -41,7 +40,6 @@ import com.boshanlu.mobile.widget.MyColorPicker;
 import com.boshanlu.mobile.widget.MySmileyPicker;
 import com.boshanlu.mobile.widget.MySpinner;
 import com.boshanlu.mobile.widget.emotioninput.EmotionInputHandler;
-import com.boshanlu.mobile.widget.htmlview.HtmlView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -82,8 +80,6 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
     private EmotionInputHandler handler;
     private ProgressDialog uploadDialog;
 
-    private SingleArticleData data;
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +89,6 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         if (b != null) {
             pid = b.getString("PID");
             tid = b.getString("TID");
-            data = (SingleArticleData) b.get("DATA");
         } else {
             showToast("参数异常无法编辑");
         }

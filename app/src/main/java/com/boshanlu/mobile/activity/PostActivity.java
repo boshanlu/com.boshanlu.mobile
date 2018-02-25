@@ -42,6 +42,7 @@ import com.boshanlu.mobile.myhttp.SyncHttpClient;
 import com.boshanlu.mobile.utils.GetId;
 import com.boshanlu.mobile.utils.KeyboardUtil;
 import com.boshanlu.mobile.utils.LinkClickHandler;
+import com.boshanlu.mobile.utils.RuisUtils;
 import com.boshanlu.mobile.utils.UrlUtils;
 import com.boshanlu.mobile.widget.MyFriendPicker;
 import com.boshanlu.mobile.widget.MyListDivider;
@@ -253,7 +254,7 @@ public class PostActivity extends BaseActivity
                 Intent i = new Intent(this, EditActivity.class);
                 i.putExtra("PID", datas.get(position).pid);
                 i.putExtra("TID", Tid);
-                i.putExtra("DATA", datas.get(position));
+                i.putExtra("PAGE", currentPage);
                 startActivityForResult(i, 10);
                 break;
             case R.id.tv_remove:
@@ -276,15 +277,16 @@ public class PostActivity extends BaseActivity
         if (resultCode == RESULT_OK) {
             if (requestCode == 10) {
                 //编辑Activity返回
-//                Bundle b = data.getExtras();
-//                String title = b.getString("TITLE", "");
+                Bundle b = data.getExtras();
+                String title = b.getString("TITLE", "");
 //                String content = b.getString("CONTENT", "");
-//                if (edit_pos == 0 && !TextUtils.isEmpty(title)) {
-//                    datas.get(0).title = title;
-//                }
-//                datas.get(edit_pos).content = content;
+                if (edit_pos == 0 && !TextUtils.isEmpty(title)) {
+                    datas.get(0).title = title;
+                }
+//                datas.get(edit_pos).content = RuisUtils.toHtml(content);
 //                adapter.notifyItemChanged(edit_pos);
-                refresh();
+                RedirectPid=datas.get(edit_pos).pid;
+                jumpPage(currentPage);
             } else if (requestCode == 20) {
                 //回复层主返回
                 replyTime = System.currentTimeMillis();
