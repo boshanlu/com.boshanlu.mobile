@@ -1,8 +1,19 @@
 package com.boshanlu.mobile.activity;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -16,11 +27,15 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.boshanlu.mobile.App;
 import com.boshanlu.mobile.R;
 import com.boshanlu.mobile.model.Forum;
 import com.boshanlu.mobile.myhttp.HttpUtil;
 import com.boshanlu.mobile.myhttp.ResponseHandler;
+import com.boshanlu.mobile.myhttp.UploadImageResponseHandler;
+import com.boshanlu.mobile.utils.DimmenUtils;
 import com.boshanlu.mobile.utils.RuisUtils;
+import com.boshanlu.mobile.utils.UrlUtils;
 import com.boshanlu.mobile.widget.MyColorPicker;
 import com.boshanlu.mobile.widget.MySmileyPicker;
 import com.boshanlu.mobile.widget.MySpinner;
@@ -31,7 +46,13 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +73,12 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
     private int typeId;
     private String pid, tid;
     private Map<String, String> params;
+
+    private String uploadHash = "123";
+    private Uri lastFile;
+    private Bitmap returnBitmap = null;
+    private EmotionInputHandler handler;
+    private ProgressDialog uploadDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,13 +148,14 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
 
         myColorPicker.setListener((pos, v, color) -> handleInsert("[color=" + color + "][/color]"));
 
-        EmotionInputHandler handler = new EmotionInputHandler(edContent, (enable, s) -> {
+        handler = new EmotionInputHandler(edContent, (enable, s) -> {
             if (enable) {
                 btnDone.setVisibility(View.VISIBLE);
             } else {
                 btnDone.setVisibility(View.INVISIBLE);
             }
         });
+
 
         smileyPicker.setListener(handler::insertSmiley);
         start_edit();
@@ -165,6 +193,15 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
                 } else {
                     typeIdContainer.setVisibility(View.GONE);
                 }
+
+                String res = new String(response);
+                int index = res.indexOf("uploadformdata:");
+                if (index > 0) {
+                    int start = res.indexOf("hash", index) + 6;
+                    int end = res.indexOf("\"", start + 5);
+                    uploadHash = res.substring(start, end);
+                    Log.v("===", "uploadhash:" + uploadHash);
+                }
             }
 
             @Override
@@ -185,6 +222,12 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         params.put("subject", edTitle.getText().toString());
         params.put("message", edContent.getText().toString());
         params.remove("delete");
+
+        //params["attachnew[\(aid)]"] = ""
+        List<String> aids = handler.getImagesAids();
+        for (String aid : aids) {
+            params.put("attachnew[" + aid + "]", "");
+        }
 
         HttpUtil.post(url, params, new ResponseHandler() {
             @Override
@@ -256,6 +299,13 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
                 smileyPicker.showAsDropDown(view, 0, 10);
                 smileyPicker.setOnDismissListener(() -> ((ImageView) view).setImageResource(R.drawable.ic_edit_emoticon_24dp));
                 break;
+            case R.id.action_insert_photo:
+                if (TextUtils.isEmpty(uploadHash)) {
+                    Toast.makeText(EditActivity.this, "你无法上传图片", Toast.LENGTH_SHORT).show();
+                } else {
+                    startActivityForResult(getPickImageChooserIntent(), 200);
+                }
+                break;
             case R.id.action_backspace:
                 int start = edContent.getSelectionStart();
                 int end = edContent.getSelectionEnd();
@@ -293,4 +343,177 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         dialog.dismiss();
         showToast(str);
     }
+
+    //以下为插入图片相关，从NewPostActivity移动过来
+    public Intent getPickImageChooserIntent() {
+        // Determine Uri of camera image to save.
+        Uri outputFileUri = getCaptureImageOutputUri();
+
+        List<Intent> allIntents = new ArrayList<>();
+        PackageManager packageManager = getPackageManager();
+
+        // collect all camera intents
+        Intent captureIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+        List<ResolveInfo> listCam = packageManager.queryIntentActivities(captureIntent, 0);
+        for (ResolveInfo res : listCam) {
+            Intent intent = new Intent(captureIntent);
+            intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+            intent.setPackage(res.activityInfo.packageName);
+            if (outputFileUri != null) {
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, outputFileUri);
+            }
+            allIntents.add(intent);
+        }
+
+        // collect all gallery intents
+        Intent galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
+        galleryIntent.setType("image/*");
+        List<ResolveInfo> listGallery = packageManager.queryIntentActivities(galleryIntent, 0);
+        for (ResolveInfo res : listGallery) {
+            Intent intent = new Intent(galleryIntent);
+            intent.setComponent(new ComponentName(res.activityInfo.packageName, res.activityInfo.name));
+            intent.setPackage(res.activityInfo.packageName);
+            allIntents.add(intent);
+        }
+
+        // the main intent is the last in the list (fucking android) so pickup the useless one
+        Intent mainIntent = allIntents.get(allIntents.size() - 1);
+        for (Intent intent : allIntents) {
+            if (intent.getComponent().getClassName().equals("com.android.documentsui.DocumentsActivity")) {
+                mainIntent = intent;
+                break;
+            }
+        }
+        allIntents.remove(mainIntent);
+
+        // Create a chooser from the main intent
+        Intent chooserIntent = Intent.createChooser(mainIntent, "选择图片");
+
+        // Add all other intents
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, allIntents.toArray(new Parcelable[allIntents.size()]));
+
+        return chooserIntent;
+    }
+
+    private Uri getCaptureImageOutputUri() {
+        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalCacheDir();
+        Uri outputFileUri = null;
+        if (storageDir != null) {
+            File image = null;
+            try {
+                image = File.createTempFile(imageFileName, ".jpg", storageDir);
+                Log.d("==", "create file success " + image.getAbsolutePath());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            outputFileUri = Uri.fromFile(image);
+        }
+        lastFile = outputFileUri;
+        return outputFileUri;
+    }
+
+    public Uri getPickImageResultUri(Intent data) {
+        boolean isCamera = true;
+        if (data != null) {
+            String action = data.getAction();
+            isCamera = action != null && action.equals(MediaStore.ACTION_IMAGE_CAPTURE);
+        }
+        return isCamera ? lastFile : data.getData();
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        if (width > 1080) {
+            float bitmapRatio = (float) width / (float) height;
+            width = 1080;
+            height = (int) (width / bitmapRatio);
+            return Bitmap.createScaledBitmap(image, width, height, true);
+        }
+        return image;
+    }
+
+    public static byte[] Bitmap2Bytes(Bitmap bm) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 85, baos);
+        return baos.toByteArray();
+    }
+
+    private void uploadImage(Bitmap bitmap) {
+        uploadDialog = new ProgressDialog(this);
+        uploadDialog.setTitle("上传中...");
+        uploadDialog.setMessage("图片上传中请稍后");
+        uploadDialog.setCancelable(false);
+        uploadDialog.show();
+        new EditActivity.UploadTask().execute(bitmap);
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private class UploadTask extends AsyncTask<Bitmap, Void, byte[]> {
+        @Override
+        protected byte[] doInBackground(Bitmap... bitmaps) {
+            Bitmap bitmap = bitmaps[0];
+            bitmap = getResizedBitmap(bitmap);
+            byte[] bytes = Bitmap2Bytes(bitmap);
+            returnBitmap = bitmap;
+
+            return bytes;
+        }
+
+        @Override
+        protected void onPostExecute(byte[] data) {
+            Map<String, String> params = new HashMap<>();
+            params.put("uid", App.getUid(EditActivity.this));
+            params.put("hash", uploadHash);
+
+            HttpUtil.uploadImage(EditActivity.this, UrlUtils.getUploadImageUrl(),
+                    params, System.currentTimeMillis() + ".jpg", data, new UploadImageResponseHandler() {
+                        @Override
+                        public void onSuccess(String aid) {
+                            Log.v("===", "upload success aid:" + aid);
+                            handler.insertImage(aid, new BitmapDrawable(getResources(), returnBitmap),
+                                    edContent.getWidth() - DimmenUtils.dip2px(EditActivity.this, 16));
+                        }
+
+                        @Override
+                        public void onFailure(Throwable e) {
+                            Log.v("===", "upload failed:" + e.getMessage());
+                            Toast.makeText(EditActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            super.onFinish();
+                            uploadDialog.dismiss();
+                        }
+                    });
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bitmap bitmap = null;
+        Log.v("=======", "requestCode:" + requestCode + "result:" + resultCode);
+        if (resultCode == Activity.RESULT_OK) {
+            if (getPickImageResultUri(data) != null) {
+                Uri picUri = getPickImageResultUri(data);
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                bitmap = (Bitmap) data.getExtras().get("data");
+            }
+        }
+
+        if (bitmap != null) {
+            uploadImage(bitmap);
+        }
+    }
+
 }
