@@ -1,5 +1,6 @@
 package com.boshanlu.mobile.activity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -179,13 +180,13 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
                     edTitle.setText(title);
                 }
 
-                if (TextUtils.isEmpty(params.get("message"))) {
+                String message = params.get("message");
+
+                if (TextUtils.isEmpty(message)) {
                     showToast("本贴不支持编辑！");
                     finish();
                 }
-                edContent.setText(params.get("message"));
-                //Log.v("hehehe",data.content.replace("<i class=\"pstatus\">.*?</i>",""));
-                //HtmlView.parseHtml(data.content.replace("<i class=\"pstatus\">.*?</i>\\s<br>\\s<br>","")).into(edContent);
+                edContent.setText(message);
 
                 Elements types = document.select("#typeid").select("option");
                 for (Element e : types) {
@@ -272,16 +273,24 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
 
     private void handleInsert(String s) {
         int start = edContent.getSelectionStart();
+        int end = edContent.getSelectionEnd();
+        int p = s.indexOf("[/");//相对于要插入的文本光标所在位置
+
         Editable edit = edContent.getEditableText();//获取EditText的文字
+
         if (start < 0 || start >= edit.length()) {
             edit.append(s);
+        } else if (start != end && start > 0 && start < end && p > 0) {
+            edit.insert(start, s.substring(0, p));//插入bbcode标签开始部分
+            end = end + p;
+            edit.insert(end, s.substring(p));//插入bbcode标签结束部分
+            p = end - start;
         } else {
             edit.insert(start, s);//光标所在位置插入文字
         }
-        //[size=7][/size]
-        int a = s.indexOf("[/");
-        if (a > 0) {
-            edContent.setSelection(start + a);
+
+        if (p > 0) {
+            edContent.setSelection(start + p);
         }
     }
 
@@ -429,13 +438,13 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         return isCamera ? lastFile : data.getData();
     }
 
-    public Bitmap getResizedBitmap(Bitmap image, int maxWidth) {
+    public Bitmap getResizedBitmap(Bitmap image) {
         int width = image.getWidth();
         int height = image.getHeight();
 
-        if (width > maxWidth) {
+        if (width > 1080) {
             float bitmapRatio = (float) width / (float) height;
-            width = maxWidth;
+            width = 1080;
             height = (int) (width / bitmapRatio);
             return Bitmap.createScaledBitmap(image, width, height, true);
         }
@@ -457,11 +466,12 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         new EditActivity.UploadTask().execute(bitmap);
     }
 
+    @SuppressLint("StaticFieldLeak")
     private class UploadTask extends AsyncTask<Bitmap, Void, byte[]> {
         @Override
         protected byte[] doInBackground(Bitmap... bitmaps) {
             Bitmap bitmap = bitmaps[0];
-            bitmap = getResizedBitmap(bitmap, 1080);
+            bitmap = getResizedBitmap(bitmap);
             byte[] bytes = Bitmap2Bytes(bitmap);
             returnBitmap = bitmap;
 
