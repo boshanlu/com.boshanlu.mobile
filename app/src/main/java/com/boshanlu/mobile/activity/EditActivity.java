@@ -1,6 +1,5 @@
 package com.boshanlu.mobile.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -30,6 +29,7 @@ import android.widget.Toast;
 import com.boshanlu.mobile.App;
 import com.boshanlu.mobile.R;
 import com.boshanlu.mobile.model.Forum;
+import com.boshanlu.mobile.model.SingleArticleData;
 import com.boshanlu.mobile.myhttp.HttpUtil;
 import com.boshanlu.mobile.myhttp.ResponseHandler;
 import com.boshanlu.mobile.myhttp.UploadImageResponseHandler;
@@ -40,6 +40,7 @@ import com.boshanlu.mobile.widget.MyColorPicker;
 import com.boshanlu.mobile.widget.MySmileyPicker;
 import com.boshanlu.mobile.widget.MySpinner;
 import com.boshanlu.mobile.widget.emotioninput.EmotionInputHandler;
+import com.boshanlu.mobile.widget.htmlview.HtmlView;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -74,11 +75,13 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
     private String pid, tid;
     private Map<String, String> params;
 
-    private String uploadHash = "123";
+    private String uploadHash = null;
     private Uri lastFile;
     private Bitmap returnBitmap = null;
     private EmotionInputHandler handler;
     private ProgressDialog uploadDialog;
+
+    private SingleArticleData data;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -89,6 +92,7 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         if (b != null) {
             pid = b.getString("PID");
             tid = b.getString("TID");
+            data = (SingleArticleData) b.get("DATA");
         } else {
             showToast("参数异常无法编辑");
         }
@@ -180,6 +184,8 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
                     finish();
                 }
                 edContent.setText(params.get("message"));
+                //Log.v("hehehe",data.content.replace("<i class=\"pstatus\">.*?</i>",""));
+                //HtmlView.parseHtml(data.content.replace("<i class=\"pstatus\">.*?</i>\\s<br>\\s<br>","")).into(edContent);
 
                 Elements types = document.select("#typeid").select("option");
                 for (Element e : types) {
@@ -396,7 +402,7 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private Uri getCaptureImageOutputUri() {
-        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalCacheDir();
         Uri outputFileUri = null;
@@ -423,13 +429,13 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         return isCamera ? lastFile : data.getData();
     }
 
-    public Bitmap getResizedBitmap(Bitmap image) {
+    public Bitmap getResizedBitmap(Bitmap image, int maxWidth) {
         int width = image.getWidth();
         int height = image.getHeight();
 
-        if (width > 1080) {
+        if (width > maxWidth) {
             float bitmapRatio = (float) width / (float) height;
-            width = 1080;
+            width = maxWidth;
             height = (int) (width / bitmapRatio);
             return Bitmap.createScaledBitmap(image, width, height, true);
         }
@@ -451,12 +457,11 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         new EditActivity.UploadTask().execute(bitmap);
     }
 
-    @SuppressLint("StaticFieldLeak")
     private class UploadTask extends AsyncTask<Bitmap, Void, byte[]> {
         @Override
         protected byte[] doInBackground(Bitmap... bitmaps) {
             Bitmap bitmap = bitmaps[0];
-            bitmap = getResizedBitmap(bitmap);
+            bitmap = getResizedBitmap(bitmap, 1080);
             byte[] bytes = Bitmap2Bytes(bitmap);
             returnBitmap = bitmap;
 
