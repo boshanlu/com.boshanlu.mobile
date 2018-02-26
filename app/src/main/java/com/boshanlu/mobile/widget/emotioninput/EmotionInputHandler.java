@@ -187,18 +187,4 @@ public class EmotionInputHandler implements TextWatcher {
     public interface TextChangeListener {
         void onTextChange(boolean enable, String s);
     }
-
-//    public void handleBBCode(String bbcode){
-//        mEditor.setText(bbcode);
-//        Pattern p = Pattern.compile("\\{:.*?:\\}");
-//        Matcher m = p.matcher(bbcode);
-//        while(m.find()){
-//            //EmoticonSpan emoticonSpan = new EmoticonSpan();
-//            int start = m.start();
-//            int end = m.end();
-//            Editable editableText = mEditor.getEditableText();
-//            // Insert the emoticon.
-//            //editableText.setSpan(emoticonSpan, start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-//        }
-//    }
 }
