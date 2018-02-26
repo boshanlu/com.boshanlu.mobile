@@ -187,5 +187,5 @@ public class EmotionInputHandler implements TextWatcher {
     public interface TextChangeListener {
         void onTextChange(boolean enable, String s);
     }
-
+    
 }

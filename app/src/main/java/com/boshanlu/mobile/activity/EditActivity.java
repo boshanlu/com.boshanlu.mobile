@@ -74,7 +74,7 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
     private String pid, tid;
     private Map<String, String> params;
 
-    private String uploadHash = "123";
+    private String uploadHash = null;
     private Uri lastFile;
     private Bitmap returnBitmap = null;
     private EmotionInputHandler handler;
@@ -406,7 +406,7 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
     }
 
     private Uri getCaptureImageOutputUri() {
-        @SuppressLint("SimpleDateFormat") String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = getExternalCacheDir();
         Uri outputFileUri = null;
