@@ -351,42 +351,75 @@ public class PostsActivity extends BaseActivity implements
             Document document = Jsoup.parse(res);
             Elements list = document.select("#threadlist tbody");
             ArticleListData temp;
-            for (Element src : list) {
-                if (src.getElementsByAttributeValue("class", "by").first() != null) {
-                    String type;
-                    if (src.attr("id").contains("stickthread")) {
-                        type = "置顶";
-                    } else if (src.select("th").attr("class").contains("lock")) {
-                        type = "关闭";
-                    } else if (src.select(".icn").select("a").attr("title").contains("投票")) {
-                        type = "投票";
-                    } else if (src.select("th").select("strong").text().length() > 0) {
-                        type = "金币:" + src.select("th").select("strong").text().trim();
-                    } else {
-                        type = "normal";
-                    }
-
+            for (Element li : list) {
+                String type = "normal";
+                if (li.attr("id").contains("stickthread")) {
+                    type = "置顶";
                     if (isHideZhiding && type.equals("置顶")) {
                         continue;
-                        //Log.i("article list", "ignore zhidin");
                     }
-
-                    Elements tempEles = src.select("th").select("a[href^=forum.php?mod=viewthread][class=s xst]");
-                    String title = tempEles.text();
-                    String titleUrl = tempEles.attr("href");
-                    int titleColor = GetId.getColor(PostsActivity.this, tempEles.attr("style"));
-                    String author = src.getElementsByAttributeValue("class", "by").first().select("a").text();
-                    String authorUrl = src.getElementsByAttributeValue("class", "by").first().select("a").attr("href");
-                    String time = src.getElementsByAttributeValue("class", "by").first().select("em").text().trim();
-                    String viewcount = src.getElementsByAttributeValue("class", "num").select("em").text();
-                    String replaycount = src.getElementsByAttributeValue("class", "num").select("a").text();
-                    String tag = src.select("em a[href^=forum.php?mod=forumdisplay]").text();
-
-                    if (title.length() > 0 && author.length() > 0) {
-                        temp = new ArticleListData(type, title, titleUrl, author, authorUrl, time, viewcount, replaycount, titleColor);
-                        if (!TextUtils.isEmpty(tag)) temp.tag = tag;
-                        tempDatas.add(temp);
+                } else {
+                    Element element = li.selectFirst("tr > th > span.xi1");
+                    if (element != null && element.text().contains("回帖奖励")) {
+                        type = "金币:" + GetId.getNumber(element.text());
+                    } else {
+                        Element e = li.selectFirst(".icn a");
+                        if (e != null) {
+                            String title = e.attr("title");
+                            if (title.startsWith("投票")) {
+                                type = "投票";
+                            } else if (title.startsWith("关闭的主题")) {
+                                type = "关闭";
+                            }
+                        }
                     }
+                }
+
+                Element titleElement = li.selectFirst("tr > th > a.s.xst");
+                if (titleElement == null) continue;
+                String title = titleElement.text();
+                String titleUrl = titleElement.attr("href");
+                int titleColor = GetId.getColor(PostsActivity.this, titleElement.attr("style"));
+
+                //#ajaxid_0\2e 0612111796964776
+
+                String author, authorUrl;
+                Element authorNode = li.selectFirst("tr > td:nth-child(3) > cite > a");
+                if (authorNode == null) {
+                    author = "未知";
+                    authorUrl = "";
+                } else {
+                    author = authorNode.text();
+                    authorUrl = authorNode.attr("href");
+                }
+
+                String time, viewcount, replaycount;
+                Element timeNode = li.selectFirst("tr > td:nth-child(3) > em");
+                if (timeNode == null) {
+                    time = "未知时间";
+                } else {
+                    time = timeNode.text();
+                }
+
+                Element viewsNode = li.selectFirst("tr > td:nth-child(4) > em");
+                if (viewsNode == null) {
+                    viewcount = "0";
+                } else {
+                    viewcount = viewsNode.text();
+                }
+
+                Element replysNode = li.selectFirst("tr > td:nth-child(4) > a");
+                if (replysNode == null) {
+                    replaycount = "0";
+                } else {
+                    replaycount = replysNode.text();
+                }
+
+                String tag = li.select("em a[href^=forum.php?mod=forumdisplay]").text();
+                if (title.length() > 0 && author.length() > 0) {
+                    temp = new ArticleListData(type, title, titleUrl, author, authorUrl, time, viewcount, replaycount, titleColor);
+                    if (!TextUtils.isEmpty(tag)) temp.tag = tag;
+                    tempDatas.add(temp);
                 }
             }
 

@@ -278,7 +278,6 @@ public class PostActivity extends BaseActivity
                 RedirectPid = datas.get(edit_pos).pid;
                 String url = "forum.php?mod=redirect&goto=findpost&ptid=" + Tid + "&pid=" + RedirectPid + "&mobile=2";
                 HttpUtil.head(url, null, new ResponseHandler() {
-
                     @Override
                     public void onSuccess(byte[] response) {
                         int page = GetId.getPage(new String(response));
