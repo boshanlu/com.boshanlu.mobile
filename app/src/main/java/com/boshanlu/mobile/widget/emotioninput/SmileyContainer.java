@@ -3,7 +3,9 @@ package com.boshanlu.mobile.widget.emotioninput;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -33,7 +35,14 @@ public class SmileyContainer extends FrameLayout {
 
     private void init() {
         savedHeight = KeyBoardHeightPreference.get(getContext(), 200);
-        setElevation(DimmenUtils.dip2px(getContext(), 4));
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            setElevation(DimmenUtils.dip2px(getContext(), 4));
+        }
+        else
+        {
+            ViewCompat.setElevation(this, DimmenUtils.dip2px(getContext(), 4));
+        }
         setLayoutParams(new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, savedHeight));
         setBackgroundResource(R.color.bg_secondary);

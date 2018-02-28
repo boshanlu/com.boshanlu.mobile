@@ -7,7 +7,7 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbarHeight"
-        android:background="@color/colorPrimary"
+        android:background="?attr/colorPrimary"
         android:elevation="4dp">
 
         <RadioGroup

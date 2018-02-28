@@ -39,7 +39,7 @@
             android:layout_width="@dimen/toolbarHeight"
             android:layout_height="@dimen/toolbarHeight"
             android:layout_gravity="end"
-            android:background="@color/colorPrimary"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:padding="13dp"
             android:src="@drawable/ic_search_white_24dp" />
