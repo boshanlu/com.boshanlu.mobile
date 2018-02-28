@@ -97,6 +97,34 @@ public class PostActivity extends BaseActivity
         context.startActivity(intent);
     }
 
+    public static String getPreparedReply(Context context, String text) {
+        int len = 0;
+        try {
+            len = text.getBytes("UTF-8").length;
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        SharedPreferences shp = PreferenceManager.getDefaultSharedPreferences(context);
+        if (shp.getBoolean("setting_show_tail", false)) {
+            String texttail = shp.getString("setting_user_tail", "无尾巴").trim();
+            if (!texttail.equals("无尾巴")) {
+                texttail = "\r\n" + texttail;
+                text += texttail;
+            }
+        }
+
+        //字数补齐补丁
+        if (len < 13) {
+            int need = 14 - len;
+            for (int i = 0; i < need; i++) {
+                text += " ";
+            }
+        }
+
+        return text;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -295,7 +323,6 @@ public class PostActivity extends BaseActivity
         }
     }
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -323,6 +350,177 @@ public class PostActivity extends BaseActivity
                 startActivity(Intent.createChooser(shareIntent, "分享到文章到:"));
                 break;
         }
+    }
+
+    /**
+     * 收藏帖子
+     */
+    private void starTask(final View v) {
+        final String url = UrlUtils.getStarUrl(Tid);
+        Map<String, String> params = new HashMap<>();
+        params.put("favoritesubmit", "true");
+        HttpUtil.post(url, params, new ResponseHandler() {
+            @Override
+            public void onSuccess(byte[] response) {
+                String res = new String(response);
+                if (res.contains("成功") || res.contains("您已收藏")) {
+                    showToast("收藏成功");
+                    if (v != null) {
+                        final ImageView mv = (ImageView) v;
+                        mv.postDelayed(() -> mv.setImageResource(R.drawable.ic_star_32dp_yes), 300);
+                    }
+                }
+            }
+        });
+    }
+
+    //删除帖子或者回复
+    private void removeItem(final int pos) {
+        Map<String, String> params = new HashMap<>();
+        params.put("editsubmit", "yes");
+        //params.put("fid",);
+        params.put("tid", Tid);
+        params.put("pid", datas.get(pos).pid);
+        params.put("delete", "1");
+        HttpUtil.post(UrlUtils.getDeleteReplyUrl(), params, new ResponseHandler() {
+            @Override
+            public void onSuccess(byte[] response) {
+                String res = new String(response);
+                Log.e("resoult", res);
+                if (res.contains("主题删除成功")) {
+                    if (datas.get(pos).type == SingleType.CONTENT) {
+                        showToast("主题删除成功");
+                        finish();
+                    } else {
+                        showToast("回复删除成功");
+                        datas.remove(pos);
+                        adapter.notifyItemRemoved(pos);
+                    }
+                } else {
+                    int start = res.indexOf("<p>");
+                    int end = res.indexOf("<", start + 5);
+                    String ss = res.substring(start + 3, end);
+                    showToast(ss);
+                }
+
+            }
+
+            @Override
+            public void onFailure(Throwable e) {
+                super.onFailure(e);
+                showToast("网络错误,删除失败！");
+            }
+        });
+    }
+
+    //回复楼主
+    private void replyLz(String url) {
+        if (!(isLogin() && checkTime() && checkInput())) {
+            return;
+        }
+        ProgressDialog dialog = new ProgressDialog(this);
+        dialog.setTitle("回复中");
+        dialog.setMessage("请稍后......");
+        dialog.show();
+
+        String s = getPreparedReply(this, input.getText().toString());
+        Map<String, String> params = new HashMap<>();
+        params.put("message", s);
+        HttpUtil.post(url + "&handlekey=fastpost&loc=1&inajax=1", params, new ResponseHandler() {
+            @Override
+            public void onSuccess(byte[] response) {
+                String res = new String(response);
+                handleReply(true, res);
+            }
+
+            @Override
+            public void onFailure(Throwable e) {
+                handleReply(false, "");
+            }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+                dialog.dismiss();
+            }
+        });
+    }
+
+    private void handleReply(boolean isok, String res) {
+        if (isok) {
+            if (res.contains("成功") || res.contains("层主")) {
+                Toast.makeText(this, "回复发表成功", Toast.LENGTH_SHORT).show();
+                input.setText(null);
+                replyTime = System.currentTimeMillis();
+                KeyboardUtil.hideKeyboard(input);
+                rootView.hideSmileyContainer();
+                if (sumPage == 1) {
+                    refresh();
+                } else if (currentPage == sumPage) {
+                    onLoadMore();
+                }
+            } else if (res.contains("您两次发表间隔")) {
+                showToast("您两次发表间隔太短了......");
+            } else if (res.contains("主题自动关闭")) {
+                showLongToast("此主题已关闭回复,无法回复");
+            } else {
+                showToast("由于未知原因发表失败");
+            }
+        } else {
+            Toast.makeText(this, "网络错误", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    //跳页
+    private void jumpPage(int to) {
+        datas.clear();
+        adapter.notifyDataSetChanged();
+        getArticleData(to);
+    }
+
+    private boolean checkInput() {
+        String s = input.getText().toString();
+        if (TextUtils.isEmpty(s)) {
+            showToast("你还没写内容呢!");
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private boolean checkTime() {
+        if (System.currentTimeMillis() - replyTime > 15000) {
+            return true;
+        } else {
+            showToast("还没到15s呢，再等等吧!");
+            return false;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!rootView.hideSmileyContainer()) {
+            super.onBackPressed();
+        }
+    }
+
+    //显示投票dialog
+    public void showVoteView() {
+        if (datas.get(0).type == SingleType.CONTENT) {
+            VoteData d = datas.get(0).vote;
+            if (d != null) {
+                VoteDialog.show(this, d);
+                return;
+            }
+
+        }
+        showToast("投票数据异常无法投票");
+    }
+
+    //用户点击了回复链接
+    //显示软键盘
+    public void showReplyKeyboard() {
+        KeyboardUtil.showKeyboard(input);
     }
 
     /**
@@ -575,205 +773,5 @@ public class PostActivity extends BaseActivity
             }
         }
 
-    }
-
-    /**
-     * 收藏帖子
-     */
-    private void starTask(final View v) {
-        final String url = UrlUtils.getStarUrl(Tid);
-        Map<String, String> params = new HashMap<>();
-        params.put("favoritesubmit", "true");
-        HttpUtil.post(url, params, new ResponseHandler() {
-            @Override
-            public void onSuccess(byte[] response) {
-                String res = new String(response);
-                if (res.contains("成功") || res.contains("您已收藏")) {
-                    showToast("收藏成功");
-                    if (v != null) {
-                        final ImageView mv = (ImageView) v;
-                        mv.postDelayed(() -> mv.setImageResource(R.drawable.ic_star_32dp_yes), 300);
-                    }
-                }
-            }
-        });
-    }
-
-    //删除帖子或者回复
-    private void removeItem(final int pos) {
-        Map<String, String> params = new HashMap<>();
-        params.put("editsubmit", "yes");
-        //params.put("fid",);
-        params.put("tid", Tid);
-        params.put("pid", datas.get(pos).pid);
-        params.put("delete", "1");
-        HttpUtil.post(UrlUtils.getDeleteReplyUrl(), params, new ResponseHandler() {
-            @Override
-            public void onSuccess(byte[] response) {
-                String res = new String(response);
-                Log.e("resoult", res);
-                if (res.contains("主题删除成功")) {
-                    if (datas.get(pos).type == SingleType.CONTENT) {
-                        showToast("主题删除成功");
-                        finish();
-                    } else {
-                        showToast("回复删除成功");
-                        datas.remove(pos);
-                        adapter.notifyItemRemoved(pos);
-                    }
-                } else {
-                    int start = res.indexOf("<p>");
-                    int end = res.indexOf("<", start + 5);
-                    String ss = res.substring(start + 3, end);
-                    showToast(ss);
-                }
-
-            }
-
-            @Override
-            public void onFailure(Throwable e) {
-                super.onFailure(e);
-                showToast("网络错误,删除失败！");
-            }
-        });
-    }
-
-    //回复楼主
-    private void replyLz(String url) {
-        if (!(isLogin() && checkTime() && checkInput())) {
-            return;
-        }
-        ProgressDialog dialog = new ProgressDialog(this);
-        dialog.setTitle("回复中");
-        dialog.setMessage("请稍后......");
-        dialog.show();
-
-        String s = getPreparedReply(this, input.getText().toString());
-        Map<String, String> params = new HashMap<>();
-        params.put("message", s);
-        HttpUtil.post(url + "&handlekey=fastpost&loc=1&inajax=1", params, new ResponseHandler() {
-            @Override
-            public void onSuccess(byte[] response) {
-                String res = new String(response);
-                handleReply(true, res);
-            }
-
-            @Override
-            public void onFailure(Throwable e) {
-                handleReply(false, "");
-            }
-
-            @Override
-            public void onFinish() {
-                super.onFinish();
-                dialog.dismiss();
-            }
-        });
-    }
-
-
-    public static String getPreparedReply(Context context, String text) {
-        int len = 0;
-        try {
-            len = text.getBytes("UTF-8").length;
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        SharedPreferences shp = PreferenceManager.getDefaultSharedPreferences(context);
-        if (shp.getBoolean("setting_show_tail", false)) {
-            String texttail = shp.getString("setting_user_tail", "无尾巴").trim();
-            if (!texttail.equals("无尾巴")) {
-                texttail = "\r\n" + texttail;
-                text += texttail;
-            }
-        }
-
-        //字数补齐补丁
-        if (len < 13) {
-            int need = 14 - len;
-            for (int i = 0; i < need; i++) {
-                text += " ";
-            }
-        }
-
-        return text;
-    }
-
-    private void handleReply(boolean isok, String res) {
-        if (isok) {
-            if (res.contains("成功") || res.contains("层主")) {
-                Toast.makeText(this, "回复发表成功", Toast.LENGTH_SHORT).show();
-                input.setText(null);
-                replyTime = System.currentTimeMillis();
-                KeyboardUtil.hideKeyboard(input);
-                rootView.hideSmileyContainer();
-                if (sumPage == 1) {
-                    refresh();
-                } else if (currentPage == sumPage) {
-                    onLoadMore();
-                }
-            } else if (res.contains("您两次发表间隔")) {
-                showToast("您两次发表间隔太短了......");
-            } else if (res.contains("主题自动关闭")) {
-                showLongToast("此主题已关闭回复,无法回复");
-            } else {
-                showToast("由于未知原因发表失败");
-            }
-        } else {
-            Toast.makeText(this, "网络错误", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    //跳页
-    private void jumpPage(int to) {
-        datas.clear();
-        adapter.notifyDataSetChanged();
-        getArticleData(to);
-    }
-
-    private boolean checkInput() {
-        String s = input.getText().toString();
-        if (TextUtils.isEmpty(s)) {
-            showToast("你还没写内容呢!");
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    private boolean checkTime() {
-        if (System.currentTimeMillis() - replyTime > 15000) {
-            return true;
-        } else {
-            showToast("还没到15s呢，再等等吧!");
-            return false;
-        }
-    }
-
-    @Override
-    public void onBackPressed() {
-        if (!rootView.hideSmileyContainer()) {
-            super.onBackPressed();
-        }
-    }
-
-    //显示投票dialog
-    public void showVoteView() {
-        if (datas.get(0).type == SingleType.CONTENT) {
-            VoteData d = datas.get(0).vote;
-            if (d != null) {
-                VoteDialog.show(this, d);
-                return;
-            }
-
-        }
-        showToast("投票数据异常无法投票");
-    }
-
-    //用户点击了回复链接
-    //显示软键盘
-    public void showReplyKeyboard() {
-        KeyboardUtil.showKeyboard(input);
     }
 }

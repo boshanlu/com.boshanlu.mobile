@@ -68,7 +68,7 @@
         <activity
             android:name="com.boshanlu.mobile.activity.NewPostActivity"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name="com.boshanlu.mobile.activity.SearchActivity"
             android:screenOrientation="portrait" />
@@ -89,7 +89,7 @@
         <activity android:name="com.boshanlu.mobile.activity.SettingActivity" />
         <activity android:name="com.boshanlu.mobile.activity.ReplyCzActivity" />
         <activity android:name="com.boshanlu.mobile.activity.ThemeActivity" />
-        <activity android:name="com.boshanlu.mobile.activity.ChangePasswordActivity"/>
+        <activity android:name="com.boshanlu.mobile.activity.ChangePasswordActivity" />
     </application>
 
 </manifest>

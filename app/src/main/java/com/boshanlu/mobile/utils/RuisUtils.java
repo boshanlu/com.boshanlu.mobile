@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.Map;
 
 public class RuisUtils {
-    private static List<Category> cateList = new ArrayList<>();
     public static Map<String, Forum> forums = new HashMap<>();
+    private static List<Category> cateList = new ArrayList<>();
 
     /**
      * 获得板块图标

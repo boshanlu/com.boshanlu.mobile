@@ -99,12 +99,9 @@ public class MyBottomTab extends LinearLayout implements OnClickListener {
         setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, DimmenUtils.dip2px(context, 56)));
         setBackgroundResource(R.color.bg_primary);
         //4dp飘起
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setElevation(DimmenUtils.dip2px(context, 4));
-        }
-        else
-        {
+        } else {
             ViewCompat.setElevation(this, DimmenUtils.dip2px(context, 4));
         }
 

@@ -220,8 +220,7 @@ public class SearchActivity extends BaseActivity implements LoadMoreListener.OnL
 
     private void show_search_view() {
         searchCard.setVisibility(View.VISIBLE);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             animator = ViewAnimationUtils.createCircularReveal(
                     searchCard,
                     searchCard.getWidth(),
@@ -252,15 +251,13 @@ public class SearchActivity extends BaseActivity implements LoadMoreListener.OnL
 
                 }
             });
-        }
-        else{
+        } else {
             KeyboardUtil.showKeyboard(searchInput);
         }
     }
 
     private void hide_search_view() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             animator = ViewAnimationUtils.createCircularReveal(
                     searchCard,
                     searchCard.getWidth(),
@@ -293,7 +290,7 @@ public class SearchActivity extends BaseActivity implements LoadMoreListener.OnL
 
                 }
             });
-        }else{
+        } else {
             searchCard.setVisibility(View.GONE);
         }
     }

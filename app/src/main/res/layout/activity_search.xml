@@ -6,10 +6,10 @@
     android:orientation="vertical">
 
     <FrameLayout
-        android:elevation="4dp"
         android:layout_width="match_parent"
         android:layout_height="@dimen/toolbarHeight"
         android:background="?attr/colorPrimary"
+        android:elevation="4dp"
         android:gravity="center_vertical|center_horizontal">
 
         <LinearLayout
@@ -51,8 +51,8 @@
     </FrameLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:background="@color/bg_primary"
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@color/bg_primary" />
 </LinearLayout>

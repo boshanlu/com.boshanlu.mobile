@@ -38,8 +38,8 @@ public class AboutActivity extends BaseActivity {
         TextView serverVersion = findViewById(R.id.server_version);
         findViewById(R.id.btn_back).setOnClickListener(view -> finish());
 
-        String ss = "<b>博山庐手机客户端</b><br />    本项目基于西电睿思手机Discuz客户端开源项目在Apache License V2.0下二次开发，原项目链接："+
-                "<a href=\"https://github.com/freedom10086/Ruisi\">GitHub</a>  ，<br />"+
+        String ss = "<b>博山庐手机客户端</b><br />    本项目基于西电睿思手机Discuz客户端开源项目在Apache License V2.0下二次开发，原项目链接：" +
+                "<a href=\"https://github.com/freedom10086/Ruisi\">GitHub</a>  ，<br />" +
                 "功能不断更新完善中，bug较多还请多多反馈<br />bug反馈:<br />" +
                 "<ul>\n" +
                 "  <li>到 <a href=\"forum.php?mod=viewthread&tid=" + App.POST_TID + "&mobile=2\">本帖</a> 回复</li>\n" +

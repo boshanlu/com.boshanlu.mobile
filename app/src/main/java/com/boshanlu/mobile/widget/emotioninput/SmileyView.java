@@ -64,12 +64,9 @@ public class SmileyView extends LinearLayout
 
     private void init(Context context) {
         this.context = context;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setElevation(DimmenUtils.dip2px(context, 4));
-        }
-        else
-        {
+        } else {
             ViewCompat.setElevation(this, DimmenUtils.dip2px(context, 4));
         }
         SIZE_8 = DimmenUtils.dip2px(context, 8);

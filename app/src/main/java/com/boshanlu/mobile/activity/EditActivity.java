@@ -80,6 +80,12 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
     private EmotionInputHandler handler;
     private ProgressDialog uploadDialog;
 
+    public static byte[] Bitmap2Bytes(Bitmap bm) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bm.compress(Bitmap.CompressFormat.JPEG, 85, baos);
+        return baos.toByteArray();
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -446,12 +452,6 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         return image;
     }
 
-    public static byte[] Bitmap2Bytes(Bitmap bm) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.JPEG, 85, baos);
-        return baos.toByteArray();
-    }
-
     private void uploadImage(Bitmap bitmap) {
         uploadDialog = new ProgressDialog(this);
         uploadDialog.setTitle("上传中...");
@@ -459,6 +459,29 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
         uploadDialog.setCancelable(false);
         uploadDialog.show();
         new EditActivity.UploadTask().execute(bitmap);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Bitmap bitmap = null;
+        Log.v("=======", "requestCode:" + requestCode + "result:" + resultCode);
+        if (resultCode == Activity.RESULT_OK) {
+            if (getPickImageResultUri(data) != null) {
+                Uri picUri = getPickImageResultUri(data);
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                bitmap = (Bitmap) data.getExtras().get("data");
+            }
+        }
+
+        if (bitmap != null) {
+            uploadImage(bitmap);
+        }
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -500,29 +523,6 @@ public class EditActivity extends BaseActivity implements View.OnClickListener {
                             uploadDialog.dismiss();
                         }
                     });
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Bitmap bitmap = null;
-        Log.v("=======", "requestCode:" + requestCode + "result:" + resultCode);
-        if (resultCode == Activity.RESULT_OK) {
-            if (getPickImageResultUri(data) != null) {
-                Uri picUri = getPickImageResultUri(data);
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), picUri);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                bitmap = (Bitmap) data.getExtras().get("data");
-            }
-        }
-
-        if (bitmap != null) {
-            uploadImage(bitmap);
         }
     }
 

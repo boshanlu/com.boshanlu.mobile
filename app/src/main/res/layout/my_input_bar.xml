@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/bg_primary"
+    android:elevation="4dp"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    android:elevation="4dp"
     android:gravity="bottom"
     android:orientation="horizontal"
     android:padding="2dp">

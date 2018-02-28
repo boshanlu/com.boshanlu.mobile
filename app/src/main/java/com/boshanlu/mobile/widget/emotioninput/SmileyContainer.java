@@ -35,12 +35,9 @@ public class SmileyContainer extends FrameLayout {
 
     private void init() {
         savedHeight = KeyBoardHeightPreference.get(getContext(), 200);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-        {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             setElevation(DimmenUtils.dip2px(getContext(), 4));
-        }
-        else
-        {
+        } else {
             ViewCompat.setElevation(this, DimmenUtils.dip2px(getContext(), 4));
         }
         setLayoutParams(new LinearLayout.LayoutParams(

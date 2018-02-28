@@ -17,8 +17,8 @@
         android:elevation="4dp"
         android:gravity="center"
         android:orientation="vertical"
-        android:paddingTop="2dp"
-        android:paddingBottom="16dp">
+        android:paddingBottom="16dp"
+        android:paddingTop="2dp">
 
         <com.boshanlu.mobile.widget.CircleImageView
             android:id="@+id/avatar"
