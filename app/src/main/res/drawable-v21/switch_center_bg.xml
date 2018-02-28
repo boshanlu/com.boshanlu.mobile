@@ -17,8 +17,7 @@
             </item>
             <item>
                 <shape android:shape="rectangle">
-                    <!-- android在api23版本才支持selector从主题中读取颜色值 -->
-                    <solid android:color="@color/colorPrimary" />
+                    <solid android:color="?attr/colorPrimary" />
                 </shape>
             </item>
         </layer-list>

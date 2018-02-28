@@ -4,7 +4,9 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -94,10 +96,17 @@ public class MyBottomTab extends LinearLayout implements OnClickListener {
         typedArray.recycle();
 
         setOrientation(LinearLayout.HORIZONTAL);// 水平布局
-        setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, DimmenUtils.dip2px(context, 56)));
+        setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, DimmenUtils.dip2px(context, 56)));
         setBackgroundResource(R.color.bg_primary);
         //4dp飘起
-        setElevation(DimmenUtils.dip2px(context, 4));
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            setElevation(DimmenUtils.dip2px(context, 4));
+        }
+        else
+        {
+            ViewCompat.setElevation(this, DimmenUtils.dip2px(context, 4));
+        }
 
         LayoutParams p = new LayoutParams(LayoutParams.MATCH_PARENT,
                 LayoutParams.MATCH_PARENT, 1);

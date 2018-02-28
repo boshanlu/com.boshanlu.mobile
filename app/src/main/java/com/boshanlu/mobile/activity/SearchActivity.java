@@ -2,6 +2,7 @@ package com.boshanlu.mobile.activity;
 
 import android.animation.Animator;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -219,72 +220,82 @@ public class SearchActivity extends BaseActivity implements LoadMoreListener.OnL
 
     private void show_search_view() {
         searchCard.setVisibility(View.VISIBLE);
-        animator = ViewAnimationUtils.createCircularReveal(
-                searchCard,
-                searchCard.getWidth(),
-                0,
-                0,
-                (float) Math.hypot(searchCard.getWidth(), searchCard.getHeight()));
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            animator = ViewAnimationUtils.createCircularReveal(
+                    searchCard,
+                    searchCard.getWidth(),
+                    0,
+                    0,
+                    (float) Math.hypot(searchCard.getWidth(), searchCard.getHeight()));
+            animator.setInterpolator(new AccelerateInterpolator());
+            animator.setDuration(260);
+            animator.start();
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
 
-        animator.setInterpolator(new AccelerateInterpolator());
-        animator.setDuration(260);
-        animator.start();
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
+                }
 
-            }
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    KeyboardUtil.showKeyboard(searchInput);
+                }
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                KeyboardUtil.showKeyboard(searchInput);
-            }
+                @Override
+                public void onAnimationCancel(Animator animator) {
 
-            @Override
-            public void onAnimationCancel(Animator animator) {
+                }
 
-            }
+                @Override
+                public void onAnimationRepeat(Animator animator) {
 
-            @Override
-            public void onAnimationRepeat(Animator animator) {
-
-            }
-        });
+                }
+            });
+        }
+        else{
+            KeyboardUtil.showKeyboard(searchInput);
+        }
     }
 
     private void hide_search_view() {
-        animator = ViewAnimationUtils.createCircularReveal(
-                searchCard,
-                searchCard.getWidth(),
-                0,
-                (float) Math.hypot(searchCard.getWidth(), searchCard.getHeight()),
-                0);
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            animator = ViewAnimationUtils.createCircularReveal(
+                    searchCard,
+                    searchCard.getWidth(),
+                    0,
+                    (float) Math.hypot(searchCard.getWidth(), searchCard.getHeight()),
+                    0);
 
-        animator.setInterpolator(new DecelerateInterpolator());
-        animator.setDuration(260);
-        animator.start();
-        animator.addListener(new Animator.AnimatorListener() {
-            @Override
-            public void onAnimationStart(Animator animator) {
 
-            }
+            animator.setInterpolator(new DecelerateInterpolator());
+            animator.setDuration(260);
+            animator.start();
+            animator.addListener(new Animator.AnimatorListener() {
+                @Override
+                public void onAnimationStart(Animator animator) {
 
-            @Override
-            public void onAnimationEnd(Animator animator) {
-                searchCard.setVisibility(View.GONE);
-            }
+                }
 
-            @Override
-            public void onAnimationCancel(Animator animator) {
+                @Override
+                public void onAnimationEnd(Animator animator) {
+                    searchCard.setVisibility(View.GONE);
+                }
 
-            }
+                @Override
+                public void onAnimationCancel(Animator animator) {
 
-            @Override
-            public void onAnimationRepeat(Animator animator) {
+                }
 
-            }
-        });
+                @Override
+                public void onAnimationRepeat(Animator animator) {
 
+                }
+            });
+        }else{
+            searchCard.setVisibility(View.GONE);
+        }
     }
 
     private class GetResultListTaskMe extends AsyncTask<String, Void, List<SimpleListData>> {

@@ -2,8 +2,10 @@ package com.boshanlu.mobile.widget.emotioninput;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -62,7 +64,14 @@ public class SmileyView extends LinearLayout
 
     private void init(Context context) {
         this.context = context;
-        setElevation(DimmenUtils.dip2px(context, 4));
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+        {
+            setElevation(DimmenUtils.dip2px(context, 4));
+        }
+        else
+        {
+            ViewCompat.setElevation(this, DimmenUtils.dip2px(context, 4));
+        }
         SIZE_8 = DimmenUtils.dip2px(context, 8);
         setOrientation(VERTICAL);
         COLOR_TAB = ContextCompat.getColor(context, R.color.bg_primary);
