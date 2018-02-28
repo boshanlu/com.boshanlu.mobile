@@ -3,7 +3,7 @@
     android:id="@+id/myToolBar"
     android:layout_width="match_parent"
     android:layout_height="@dimen/toolbarHeight"
-    android:background="#d12121"
+    android:background="@color/colorPrimary"
     android:elevation="4dp">
 
     <ImageView
