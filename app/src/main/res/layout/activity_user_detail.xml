@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/bg02"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleGravity="center_horizontal|bottom"
+            app:expandedTitleGravity="bottom|start"
             app:expandedTitleTextAppearance="@style/text_toolbar"
             app:layout_scrollFlags="scroll|exitUntilCollapsed">
 
@@ -35,7 +35,9 @@
                 android:id="@+id/user_detail_img_avatar"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
-                android:layout_gravity="center"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="40dp"
+                android:layout_marginTop="-10dp"
                 android:src="@drawable/image_placeholder"
                 app:civ_border_color="@android:color/white"
                 app:civ_border_width="2dp" />
@@ -43,7 +45,7 @@
             <LinearLayout
                 android:layout_width="160dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal|bottom"
+                android:layout_gravity="start|bottom"
                 android:layout_marginBottom="4dp"
                 android:orientation="vertical">
 
