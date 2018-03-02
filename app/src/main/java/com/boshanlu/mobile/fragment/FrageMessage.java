@@ -173,7 +173,7 @@ public class FrageMessage extends BaseLazyFragment implements LoadMoreListener.O
         } else if (index == 1) { //pm
             url = "home.php?mod=space&do=pm&mobile=2&page=" + currentPage;
         } else { //@wo
-            url = "home.php?mod=space&do=notice&view=mypost&type=at&mobile=2&page=" + currentPage;
+            url = "home.php?mod=space&do=notice&view=mypost&type=at&mobile=no&page=" + currentPage;
         }
 
         HttpUtil.get(url, new ResponseHandler() {
